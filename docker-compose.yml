@@ -13,13 +13,13 @@ services:
       - kroki-network
 
   mcp-kroki:
-    # Production: Use pre-built image from Docker Hub
-    image: aescanero/mcp-kroki:latest
+    # Build locally (default until first release is published to Docker Hub)
+    build:
+      context: .
+      dockerfile: Dockerfile
 
-    # Development: Uncomment to build locally
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    # Production: Uncomment to use pre-built image from Docker Hub (after v1.0.0 release)
+    # image: aescanero/mcp-kroki:latest
 
     ports:
       - "8084:8084"
