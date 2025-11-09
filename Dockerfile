@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY mcp_kroki_server.py .
+COPY oauth_middleware.py .
 COPY .env.example .env
 
 # Expose port
