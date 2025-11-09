@@ -1,5 +1,8 @@
 version: "3.8"
 
+# Development docker-compose for local development with hot reload
+# Uses local code and builds from Dockerfile
+
 services:
   kroki:
     image: yuzutech/kroki
@@ -13,33 +16,23 @@ services:
       - kroki-network
 
   mcp-kroki:
-    # Production: Use pre-built image from Docker Hub
-    image: aescanero/mcp-kroki:latest
-
-    # Development: Uncomment to build locally
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8084:8084"
     environment:
       - KROKI_URL=http://kroki:8000
       - HOST=0.0.0.0
       - PORT=8084
-      # OAuth configuration (optional)
       - OAUTH_ENABLED=false
-      # - OAUTH_ISSUER=https://auth.example.com
-      # - OAUTH_CLIENT_ID=your-client-id
-      # - OAUTH_CLIENT_SECRET=your-client-secret
     depends_on:
       - kroki
     networks:
       - kroki-network
-
-    # Development: Uncomment to mount local code
-    # volumes:
-    #   - ./:/app
+    volumes:
+      - ./:/app
+    command: uvicorn mcp_kroki_server:app --host 0.0.0.0 --port 8084 --reload
 
 networks:
   kroki-network:
