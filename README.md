@@ -22,11 +22,65 @@ This MCP (Model Context Protocol) server provides tools to generate, validate, a
 - **Code & Architecture**: graphviz, mermaid, nomnoml, pikchr, plantuml, structurizr
 - **Specialized**: svgbob, symbolator, umlet, vega, vegalite, wavedrom, wireviz
 
-## Installation
+## Quick Start with Docker
+
+The easiest way to run mcp-kroki is using the pre-built Docker image from Docker Hub:
+
+```bash
+# Pull the latest image
+docker pull aescanero/mcp-kroki:latest
+
+# Run the container
+docker run -d -p 8084:8084 \
+  -e KROKI_URL=http://your-kroki-server:8000 \
+  aescanero/mcp-kroki:latest
+```
+
+### Docker Hub
+
+**Repository:** https://hub.docker.com/r/aescanero/mcp-kroki
+
+**Available Tags:**
+- `latest` - Most recent stable release
+- `1.0.0` - Specific version (example)
+- `1.0` - Latest patch in version 1.0
+- `1` - Latest release in major version 1
+
+### Using Docker Compose
+
+Create a `docker-compose.yml`:
+
+```yaml
+version: "3.8"
+
+services:
+  kroki:
+    image: yuzutech/kroki
+    ports:
+      - "8000:8000"
+
+  mcp-kroki:
+    image: aescanero/mcp-kroki:latest
+    ports:
+      - "8084:8084"
+    environment:
+      - KROKI_URL=http://kroki:8000
+      - HOST=0.0.0.0
+      - PORT=8084
+    depends_on:
+      - kroki
+```
+
+Then run:
+```bash
+docker-compose up -d
+```
+
+## Installation from Source
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/aescanero/mcp-kroki.git
 cd mcp-kroki
 ```
 
@@ -184,6 +238,51 @@ services:
       - "8000:8000"
 ```
 
+## Deployment
+
+### Automated Releases
+
+This project uses GitHub Actions to automatically build and publish Docker images when a new version tag is pushed.
+
+**To create a new release:**
+
+```bash
+# Create a version tag (following semantic versioning)
+git tag -a v1.0.0 -m "Release version 1.0.0"
+
+# Push the tag to GitHub
+git push origin v1.0.0
+```
+
+The GitHub Action will automatically:
+1. Build the Docker image for multiple platforms (linux/amd64, linux/arm64)
+2. Tag the image with multiple versions (latest, 1.0.0, 1.0, 1)
+3. Push to Docker Hub at https://hub.docker.com/r/aescanero/mcp-kroki
+
+For detailed information about the release process, see [RELEASE.md](RELEASE.md).
+
+## Development
+
+### Running Locally for Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run with auto-reload
+uvicorn mcp_kroki_server:app --reload --host 0.0.0.0 --port 8084
+```
+
+### Building Docker Image Locally
+
+```bash
+# Build the image
+docker build -t mcp-kroki:dev .
+
+# Run the image
+docker run -p 8084:8084 -e KROKI_URL=http://localhost:8000 mcp-kroki:dev
+```
+
 ## License
 
 See LICENSE file for details.
@@ -191,3 +290,17 @@ See LICENSE file for details.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### How to Contribute
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Support
+
+- **Issues**: https://github.com/aescanero/mcp-kroki/issues
+- **Docker Hub**: https://hub.docker.com/r/aescanero/mcp-kroki
+- **Kroki Documentation**: https://kroki.io/
