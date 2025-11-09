@@ -78,3 +78,14 @@ Kroki URL
 {{- .Values.config.krokiUrl }}
 {{- end }}
 {{- end }}
+
+{{/*
+OAuth secret name
+*/}}
+{{- define "mcp-kroki.oauthSecretName" -}}
+{{- if .Values.oauth.existingSecret }}
+{{- .Values.oauth.existingSecret }}
+{{- else }}
+{{- printf "%s-oauth" (include "mcp-kroki.fullname" .) }}
+{{- end }}
+{{- end }}

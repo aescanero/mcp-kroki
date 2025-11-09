@@ -130,6 +130,42 @@ config:
   # Port to bind the server to
   port: 8084
 
+# OAuth 2.1 Authentication Configuration
+oauth:
+  # Enable or disable OAuth 2.1 authentication
+  enabled: false
+
+  # OAuth provider configuration
+  issuer: ""
+  # Example: "https://auth.example.com"
+
+  clientId: ""
+  # Your OAuth client ID
+
+  clientSecret: ""
+  # Your OAuth client secret
+  # WARNING: Consider using existingSecret instead of storing the secret in values
+
+  audience: ""
+  # Expected audience for access tokens (optional but recommended)
+
+  # Token validation method: "introspection" or "jwks"
+  # - introspection: More accurate, requires network call to OAuth provider
+  # - jwks: Faster, validates tokens locally using JWKS
+  tokenValidation: "introspection"
+
+  introspectionUrl: ""
+  # OAuth introspection endpoint (required if tokenValidation=introspection)
+  # Example: "https://auth.example.com/oauth2/introspect"
+
+  jwksUrl: ""
+  # JWKS URL (required if tokenValidation=jwks)
+  # Example: "https://auth.example.com/.well-known/jwks.json"
+
+  # Use an existing secret for OAuth credentials instead of creating one
+  # The secret should contain: client-id, client-secret
+  existingSecret: ""
+
 # Deploy Kroki server alongside MCP Kroki
 kroki:
   enabled: true

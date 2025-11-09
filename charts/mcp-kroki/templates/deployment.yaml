@@ -57,6 +57,52 @@ spec:
                 configMapKeyRef:
                   name: {{ include "mcp-kroki.fullname" . }}
                   key: port
+            # OAuth Configuration
+            - name: OAUTH_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-kroki.fullname" . }}
+                  key: oauth-enabled
+            {{- if .Values.oauth.enabled }}
+            - name: OAUTH_ISSUER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-kroki.fullname" . }}
+                  key: oauth-issuer
+            - name: OAUTH_AUDIENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-kroki.fullname" . }}
+                  key: oauth-audience
+            - name: OAUTH_TOKEN_VALIDATION
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-kroki.fullname" . }}
+                  key: oauth-token-validation
+            {{- if eq .Values.oauth.tokenValidation "introspection" }}
+            - name: OAUTH_INTROSPECTION_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-kroki.fullname" . }}
+                  key: oauth-introspection-url
+            {{- else if eq .Values.oauth.tokenValidation "jwks" }}
+            - name: OAUTH_JWKS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-kroki.fullname" . }}
+                  key: oauth-jwks-url
+            {{- end }}
+            - name: OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mcp-kroki.oauthSecretName" . }}
+                  key: client-id
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mcp-kroki.oauthSecretName" . }}
+                  key: client-secret
+            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

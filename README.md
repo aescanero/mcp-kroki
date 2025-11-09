@@ -14,6 +14,10 @@ This MCP (Model Context Protocol) server provides tools to generate, validate, a
   - `validate_diagram_xxx`: Validate diagram syntax (available for diagram types with schema support)
   - `obtain_svg_from_diagram`: Fetch diagram content from a Kroki URL
   - `save_diagram`: Save diagram from URL to a local file
+- **OAuth 2.1 Authentication**: Optional OAuth 2.1 authentication support (can be disabled)
+  - Token introspection or JWKS validation
+  - Compatible with any OAuth 2.1 provider (Keycloak, Auth0, Azure AD, Okta, etc.)
+  - See [OAUTH.md](OAUTH.md) for configuration details
 
 ## Supported Diagram Types
 
@@ -342,6 +346,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - **Issues**: https://github.com/aescanero/mcp-kroki/issues
 - **Docker Hub**: https://hub.docker.com/r/aescanero/mcp-kroki
 - **Helm Charts**: https://aescanero.github.io/mcp-kroki
-- **Helm Documentation**: [HELM.md](HELM.md)
-- **Release Process**: [RELEASE.md](RELEASE.md)
+- **Documentation**:
+  - [HELM.md](HELM.md) - Helm chart documentation
+  - [OAUTH.md](OAUTH.md) - OAuth 2.1 authentication guide
+  - [RELEASE.md](RELEASE.md) - Release process
 - **Kroki Documentation**: https://kroki.io/

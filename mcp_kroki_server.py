@@ -8,9 +8,12 @@ import zlib
 import requests
 from typing import Optional
 from fastmcp import FastMCP
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
+
+# Import OAuth middleware
+from oauth_middleware import get_current_user, optional_authentication, oauth_validator
 
 # Configure logging
 logging.basicConfig(
@@ -25,6 +28,12 @@ KROKI_URL = os.getenv("KROKI_URL", "http://localhost:8000")
 
 logger.info(f"Initializing Kroki MCP HTTP Server on {HOST}:{PORT}")
 logger.info(f"Kroki server URL: {KROKI_URL}")
+
+# Log OAuth status
+if oauth_validator.enabled:
+    logger.info("OAuth 2.1 authentication is ENABLED")
+else:
+    logger.info("OAuth 2.1 authentication is DISABLED")
 
 mcp = FastMCP("kroki-mcp-server")
 
@@ -306,12 +315,71 @@ app.add_middleware(
 
 
 @app.get("/health")
-def status():
-    return {
+def status(user: Optional[dict] = Depends(optional_authentication)):
+    """Health check endpoint - public but provides extra info if authenticated"""
+    response = {
         "status": "ok",
         "kroki_url": KROKI_URL,
         "supported_diagrams": len(DIAGRAM_TYPES),
-        "validatable_diagrams": len(VALIDATABLE_TYPES)
+        "validatable_diagrams": len(VALIDATABLE_TYPES),
+        "oauth_enabled": oauth_validator.enabled
+    }
+
+    # Add user info if authenticated
+    if user:
+        response["authenticated"] = True
+        response["user"] = {
+            "sub": user.get("sub"),
+            "scope": user.get("scope", "")
+        }
+    else:
+        response["authenticated"] = False
+
+    return response
+
+
+@app.get("/oauth/info")
+def oauth_info():
+    """OAuth configuration information endpoint - public"""
+    if not oauth_validator.enabled:
+        return {
+            "enabled": False,
+            "message": "OAuth authentication is disabled"
+        }
+
+    return {
+        "enabled": True,
+        "issuer": oauth_validator.issuer,
+        "client_id": oauth_validator.client_id,
+        "audience": oauth_validator.audience,
+        "validation_method": oauth_validator.validation_method,
+        "jwks_url": oauth_validator.jwks_url if oauth_validator.validation_method == "jwks" else None,
+        "introspection_url": oauth_validator.introspection_url if oauth_validator.validation_method == "introspection" else None
+    }
+
+
+@app.get("/protected")
+def protected_endpoint(user: dict = Depends(get_current_user)):
+    """
+    Example protected endpoint - requires valid OAuth token if OAuth is enabled
+    If OAuth is disabled, this endpoint is accessible without authentication
+    """
+    if user is None:
+        # OAuth is disabled
+        return {
+            "message": "This endpoint is unprotected (OAuth disabled)",
+            "oauth_enabled": False
+        }
+
+    # OAuth is enabled and user is authenticated
+    return {
+        "message": "Successfully authenticated!",
+        "oauth_enabled": True,
+        "user": {
+            "sub": user.get("sub"),
+            "scope": user.get("scope", ""),
+            "client_id": user.get("client_id", user.get("azp", "")),
+        }
     }
 
 
