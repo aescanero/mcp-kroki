@@ -28,7 +28,11 @@ This MCP (Model Context Protocol) server provides tools to generate, validate, a
 
 ## Quick Start with Docker
 
-The easiest way to run mcp-kroki is using the pre-built Docker image from Docker Hub:
+> **Note**: The Docker Hub image will be available after the first release (v1.0.0) is created.
+> For now, use Docker Compose to build and run locally (see below).
+> To publish the image, create a version tag on main: `git tag -a v1.0.0 -m "Release v1.0.0" && git push origin v1.0.0`
+
+Once v1.0.0 is released, the easiest way to run mcp-kroki is using the pre-built Docker image from Docker Hub:
 
 ```bash
 # Pull the latest image
