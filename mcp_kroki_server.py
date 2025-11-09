@@ -79,18 +79,14 @@ def call_kroki(diagram_type: str, diagram_source: str, output_format: str = "svg
         dict with success status, data/error, and diagram_url
     """
     try:
-        # Method 1: POST request with JSON payload (preferred)
+        # POST request with plain text body (as per Kroki documentation)
         url = f"{KROKI_URL}/{diagram_type}/{output_format}"
 
         headers = {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain"
         }
 
-        payload = {
-            "diagram_source": diagram_source
-        }
-
-        response = requests.post(url, json=payload, timeout=30)
+        response = requests.post(url, data=diagram_source, headers=headers, timeout=30)
 
         if response.status_code == 200:
             # Generate URL for reference
