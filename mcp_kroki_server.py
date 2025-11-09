@@ -123,8 +123,7 @@ def call_kroki(diagram_type: str, diagram_source: str, output_format: str = "svg
 def create_generate_tool(diagram_type: str):
     """Create a generate tool for a specific diagram type"""
 
-    @mcp.tool()
-    def tool(diagram_source: str, output_format: str = "svg") -> dict:
+    def generate_func(diagram_source: str, output_format: str = "svg") -> dict:
         f"""Generate {diagram_type} diagram
 
         Args:
@@ -137,16 +136,26 @@ def create_generate_tool(diagram_type: str):
         logger.info(f"Generating {diagram_type} diagram")
         return call_kroki(diagram_type, diagram_source, output_format)
 
-    # Set the function name dynamically
-    tool.__name__ = f"generate_diagram_{diagram_type}"
-    return tool
+    # Set the function name and docstring before registering
+    generate_func.__name__ = f"generate_diagram_{diagram_type}"
+    generate_func.__doc__ = f"""Generate {diagram_type} diagram
+
+Args:
+    diagram_source: Source code for the {diagram_type} diagram
+    output_format: Output format (svg, png, pdf, jpeg, base64). Default: svg
+
+Returns:
+    Dictionary with diagram data and URL
+"""
+
+    # Register with the correct name
+    return mcp.tool()(generate_func)
 
 
 def create_validate_tool(diagram_type: str):
     """Create a validate tool for diagram types that support validation"""
 
-    @mcp.tool()
-    def tool(diagram_source: str) -> dict:
+    def validate_func(diagram_source: str) -> dict:
         f"""Validate {diagram_type} diagram syntax
 
         This tool validates the diagram syntax by attempting to generate it.
@@ -175,8 +184,21 @@ def create_validate_tool(diagram_type: str):
                 "validation_method": VALIDATABLE_TYPES.get(diagram_type, "Parser validation")
             }
 
-    tool.__name__ = f"validate_diagram_{diagram_type}"
-    return tool
+    # Set the function name and docstring before registering
+    validate_func.__name__ = f"validate_diagram_{diagram_type}"
+    validate_func.__doc__ = f"""Validate {diagram_type} diagram syntax
+
+This tool validates the diagram syntax by attempting to generate it.
+Validation method: {VALIDATABLE_TYPES.get(diagram_type, 'Parser validation')}
+
+Args:
+    diagram_source: Source code for the {diagram_type} diagram
+
+Returns:
+    Dictionary with validation result
+"""
+
+    return mcp.tool()(validate_func)
 
 
 # Register tools for all diagram types
