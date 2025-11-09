@@ -76,6 +76,37 @@ Then run:
 docker-compose up -d
 ```
 
+## Quick Start with Kubernetes/Helm
+
+Deploy MCP Kroki to your Kubernetes cluster using Helm:
+
+```bash
+# Add the Helm repository
+helm repo add mcp-kroki https://aescanero.github.io/mcp-kroki
+helm repo update
+
+# Install the chart (includes Kroki server)
+helm install my-mcp-kroki mcp-kroki/mcp-kroki
+
+# Or with custom values
+helm install my-mcp-kroki mcp-kroki/mcp-kroki \
+  --set service.type=LoadBalancer \
+  --set ingress.enabled=true
+```
+
+### Helm Repository
+
+**Repository URL:** https://aescanero.github.io/mcp-kroki
+
+**Features:**
+- Deploy both MCP Kroki and Kroki server in one command
+- Optional Ingress configuration
+- Horizontal Pod Autoscaling support
+- ConfigMap-based configuration
+- Production-ready defaults
+
+For detailed Helm chart documentation, see [HELM.md](HELM.md).
+
 ## Installation from Source
 
 1. Clone the repository:
@@ -242,7 +273,7 @@ services:
 
 ### Automated Releases
 
-This project uses GitHub Actions to automatically build and publish Docker images when a new version tag is pushed.
+This project uses GitHub Actions to automatically build and publish Docker images and Helm charts when a new version tag is pushed.
 
 **To create a new release:**
 
@@ -254,10 +285,17 @@ git tag -a v1.0.0 -m "Release version 1.0.0"
 git push origin v1.0.0
 ```
 
-The GitHub Action will automatically:
+The GitHub Actions will automatically:
+
+**Docker:**
 1. Build the Docker image for multiple platforms (linux/amd64, linux/arm64)
 2. Tag the image with multiple versions (latest, 1.0.0, 1.0, 1)
 3. Push to Docker Hub at https://hub.docker.com/r/aescanero/mcp-kroki
+
+**Helm:**
+1. Update the Helm chart version
+2. Package the Helm chart
+3. Publish to GitHub Pages at https://aescanero.github.io/mcp-kroki
 
 For detailed information about the release process, see [RELEASE.md](RELEASE.md).
 
@@ -303,4 +341,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - **Issues**: https://github.com/aescanero/mcp-kroki/issues
 - **Docker Hub**: https://hub.docker.com/r/aescanero/mcp-kroki
+- **Helm Charts**: https://aescanero.github.io/mcp-kroki
+- **Helm Documentation**: [HELM.md](HELM.md)
+- **Release Process**: [RELEASE.md](RELEASE.md)
 - **Kroki Documentation**: https://kroki.io/

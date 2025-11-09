@@ -1,0 +1,33 @@
+apiVersion: v2
+name: mcp-kroki
+description: A Helm chart for deploying MCP Kroki server - Streamable HTTP MCP server for Kroki diagrams
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 1.0.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+appVersion: "1.0.0"
+
+keywords:
+  - mcp
+  - kroki
+  - diagrams
+  - plantuml
+  - mermaid
+  - graphviz
+
+maintainers:
+  - name: aescanero
+    url: https://github.com/aescanero
+
+home: https://github.com/aescanero/mcp-kroki
+sources:
+  - https://github.com/aescanero/mcp-kroki
+  - https://hub.docker.com/r/aescanero/mcp-kroki
+
+icon: https://kroki.io/assets/logo.svg

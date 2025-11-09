@@ -1,0 +1,116 @@
+name: Release Helm Chart
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+      - main
+    paths:
+      - 'charts/**'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'latest'
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "is_tag=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_tag=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update Chart version
+        if: steps.version.outputs.is_tag == 'true'
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          # Update Chart.yaml version and appVersion
+          sed -i "s/^version:.*/version: ${VERSION}/" charts/mcp-kroki/Chart.yaml
+          sed -i "s/^appVersion:.*/appVersion: \"${VERSION}\"/" charts/mcp-kroki/Chart.yaml
+
+          echo "Updated Chart.yaml:"
+          cat charts/mcp-kroki/Chart.yaml
+
+      - name: Lint Helm Chart
+        run: |
+          helm lint charts/mcp-kroki
+
+      - name: Package Helm Chart
+        run: |
+          mkdir -p .cr-release-packages
+          helm package charts/mcp-kroki --destination .cr-release-packages
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Update Helm repository
+        run: |
+          # Create gh-pages directory if it doesn't exist
+          mkdir -p gh-pages
+
+          # Copy packaged chart to gh-pages
+          cp .cr-release-packages/*.tgz gh-pages/ || true
+
+          # Generate or update index.yaml
+          cd gh-pages
+          helm repo index . --url https://aescanero.github.io/mcp-kroki
+
+          # Show the index
+          echo "Generated index.yaml:"
+          cat index.yaml
+
+      - name: Commit and push to gh-pages
+        run: |
+          cd gh-pages
+          git add .
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Release Helm chart ${{ steps.version.outputs.version || 'latest' }}"
+            git push
+          fi
+
+      - name: Generate release summary
+        if: steps.version.outputs.is_tag == 'true'
+        run: |
+          echo "## Helm Chart Released :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Chart Repository:** https://aescanero.github.io/mcp-kroki" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "helm repo add mcp-kroki https://aescanero.github.io/mcp-kroki" >> $GITHUB_STEP_SUMMARY
+          echo "helm repo update" >> $GITHUB_STEP_SUMMARY
+          echo "helm install my-mcp-kroki mcp-kroki/mcp-kroki --version ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

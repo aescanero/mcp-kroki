@@ -43,8 +43,9 @@ git push origin v1.0.0
 
 ### 3. Automated Build Process
 
-Once you push a tag matching `v*.*.*`, the GitHub Action will automatically:
+Once you push a tag matching `v*.*.*`, the GitHub Actions will automatically:
 
+**Docker Build:**
 1. ✅ Build the Docker image
 2. ✅ Tag the image with multiple versions:
    - `aescanero/mcp-kroki:1.0.0` (full version)
@@ -53,6 +54,13 @@ Once you push a tag matching `v*.*.*`, the GitHub Action will automatically:
    - `aescanero/mcp-kroki:latest`
 3. ✅ Push to Docker Hub
 4. ✅ Build for multiple platforms (linux/amd64, linux/arm64)
+
+**Helm Chart Release:**
+1. ✅ Update Chart.yaml with the new version
+2. ✅ Lint the Helm chart
+3. ✅ Package the Helm chart
+4. ✅ Update the Helm repository index
+5. ✅ Publish to GitHub Pages (https://aescanero.github.io/mcp-kroki)
 
 ### 4. Create GitHub Release (Optional but Recommended)
 
@@ -130,6 +138,32 @@ After each release, the following Docker image tags are available:
 ## Docker Hub Repository
 
 All images are published to: **https://hub.docker.com/r/aescanero/mcp-kroki**
+
+## Helm Chart Repository
+
+All Helm charts are published to: **https://aescanero.github.io/mcp-kroki**
+
+### Using the Helm Chart
+
+After each release, the Helm chart is available:
+
+```bash
+# Add the repository
+helm repo add mcp-kroki https://aescanero.github.io/mcp-kroki
+helm repo update
+
+# Install specific version
+helm install my-mcp-kroki mcp-kroki/mcp-kroki --version 1.0.0
+
+# Install latest version
+helm install my-mcp-kroki mcp-kroki/mcp-kroki
+```
+
+### Helm Chart Versions
+
+The Helm chart version matches the application version. For example:
+- Application version `v1.0.0` → Helm chart version `1.0.0`
+- Both the `version` and `appVersion` fields in Chart.yaml are updated automatically
 
 ## Rollback a Release
 

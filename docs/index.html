@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Kroki Helm Chart Repository</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+        code {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+        .badge:hover {
+            background: #764ba2;
+        }
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 MCP Kroki Helm Charts</h1>
+        <p class="subtitle">Streamable HTTP MCP server for Kroki diagrams on Kubernetes</p>
+
+        <div>
+            <a href="https://github.com/aescanero/mcp-kroki" class="badge">GitHub</a>
+            <a href="https://hub.docker.com/r/aescanero/mcp-kroki" class="badge">Docker Hub</a>
+            <a href="https://kroki.io/" class="badge">Kroki Docs</a>
+        </div>
+
+        <h2>Quick Start</h2>
+        <pre><code># Add the Helm repository
+helm repo add mcp-kroki https://aescanero.github.io/mcp-kroki
+helm repo update
+
+# Install the chart
+helm install my-mcp-kroki mcp-kroki/mcp-kroki
+
+# Install with custom values
+helm install my-mcp-kroki mcp-kroki/mcp-kroki \
+  --set service.type=LoadBalancer \
+  --set ingress.enabled=true</code></pre>
+
+        <h2>Features</h2>
+        <ul>
+            <li><strong>27+ Diagram Types:</strong> PlantUML, Mermaid, GraphViz, D2, BPMN, and more</li>
+            <li><strong>Auto-deployment:</strong> Optionally deploys Kroki server alongside MCP</li>
+            <li><strong>Production-ready:</strong> Includes health checks, autoscaling, and resource management</li>
+            <li><strong>Flexible configuration:</strong> ConfigMap-based with Ingress support</li>
+            <li><strong>Multi-platform:</strong> Supports linux/amd64 and linux/arm64</li>
+        </ul>
+
+        <h2>Available Charts</h2>
+        <h3>mcp-kroki</h3>
+        <p>Main chart for deploying MCP Kroki server</p>
+        <pre><code>helm install my-mcp-kroki mcp-kroki/mcp-kroki --version 1.0.0</code></pre>
+
+        <h2>Configuration</h2>
+        <p>The following table lists key configurable parameters:</p>
+        <ul>
+            <li><code>replicaCount</code> - Number of replicas (default: 1)</li>
+            <li><code>image.tag</code> - Docker image tag (default: chart appVersion)</li>
+            <li><code>service.type</code> - Kubernetes service type (default: ClusterIP)</li>
+            <li><code>ingress.enabled</code> - Enable Ingress (default: false)</li>
+            <li><code>kroki.enabled</code> - Deploy Kroki server (default: true)</li>
+            <li><code>config.krokiUrl</code> - External Kroki URL if kroki.enabled=false</li>
+        </ul>
+
+        <div class="note">
+            <strong>📖 Documentation:</strong> For complete documentation, visit the
+            <a href="https://github.com/aescanero/mcp-kroki/blob/main/HELM.md">Helm Documentation</a>
+        </div>
+
+        <h2>Examples</h2>
+
+        <h3>Deploy with External Kroki</h3>
+        <pre><code>helm install my-mcp-kroki mcp-kroki/mcp-kroki \
+  --set kroki.enabled=false \
+  --set config.krokiUrl=https://kroki.example.com</code></pre>
+
+        <h3>Deploy with Ingress</h3>
+        <pre><code>helm install my-mcp-kroki mcp-kroki/mcp-kroki \
+  --set ingress.enabled=true \
+  --set ingress.className=nginx \
+  --set ingress.hosts[0].host=mcp-kroki.example.com</code></pre>
+
+        <h2>Supported Diagram Types</h2>
+        <ul>
+            <li><strong>Block Diagram Family:</strong> blockdiag, seqdiag, actdiag, nwdiag, packetdiag, rackdiag</li>
+            <li><strong>General Purpose:</strong> bpmn, bytefield, c4plantuml, d2, dbml, ditaa, erd, excalidraw</li>
+            <li><strong>Code & Architecture:</strong> graphviz, mermaid, nomnoml, pikchr, plantuml, structurizr</li>
+            <li><strong>Specialized:</strong> svgbob, symbolator, umlet, vega, vegalite, wavedrom, wireviz</li>
+        </ul>
+
+        <h2>Resources</h2>
+        <ul>
+            <li><a href="https://github.com/aescanero/mcp-kroki">GitHub Repository</a></li>
+            <li><a href="https://github.com/aescanero/mcp-kroki/blob/main/HELM.md">Helm Chart Documentation</a></li>
+            <li><a href="https://github.com/aescanero/mcp-kroki/blob/main/README.md">Project README</a></li>
+            <li><a href="https://hub.docker.com/r/aescanero/mcp-kroki">Docker Hub</a></li>
+            <li><a href="https://kroki.io/">Kroki Documentation</a></li>
+        </ul>
+
+        <div class="footer">
+            <p>MCP Kroki - Streamable HTTP MCP for Kroki diagrams</p>
+            <p>Licensed under the terms specified in the repository</p>
+        </div>
+    </div>
+</body>
+</html>
