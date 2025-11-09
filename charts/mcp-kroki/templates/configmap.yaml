@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mcp-kroki.fullname" . }}
+  labels:
+    {{- include "mcp-kroki.labels" . | nindent 4 }}
+data:
+  kroki-url: {{ include "mcp-kroki.krokiUrl" . | quote }}
+  host: {{ .Values.config.host | quote }}
+  port: {{ .Values.config.port | quote }}
+  # OAuth configuration
+  oauth-enabled: {{ .Values.oauth.enabled | quote }}
+  {{- if .Values.oauth.enabled }}
+  oauth-issuer: {{ .Values.oauth.issuer | quote }}
+  oauth-audience: {{ .Values.oauth.audience | quote }}
+  oauth-token-validation: {{ .Values.oauth.tokenValidation | quote }}
+  {{- if eq .Values.oauth.tokenValidation "introspection" }}
+  oauth-introspection-url: {{ .Values.oauth.introspectionUrl | quote }}
+  {{- else if eq .Values.oauth.tokenValidation "jwks" }}
+  oauth-jwks-url: {{ .Values.oauth.jwksUrl | quote }}
+  {{- end }}
+  {{- end }}
