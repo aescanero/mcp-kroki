@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  kroki:
+    image: yuzutech/kroki
+    ports:
+      - "8000:8000"
+    environment:
+      - KROKI_BLOCKDIAG_HOST=blockdiag
+      - KROKI_MERMAID_HOST=mermaid
+      - KROKI_BPMN_HOST=bpmn
+    networks:
+      - kroki-network
+
+  mcp-kroki:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      - KROKI_URL=http://kroki:8000
+      - HOST=0.0.0.0
+      - PORT=8084
+    depends_on:
+      - kroki
+    networks:
+      - kroki-network
+    volumes:
+      - ./:/app
+
+networks:
+  kroki-network:
+    driver: bridge
