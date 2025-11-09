@@ -77,39 +77,24 @@ jobs:
             cd gh-pages
             git init
             git checkout -b gh-pages
-            # Create initial README and index.html
-            cat > README.md << 'EOFREADME'
-# MCP Kroki Helm Chart Repository
 
-This is the Helm chart repository for MCP Kroki.
+            # Create initial README
+            echo "# MCP Kroki Helm Chart Repository" > README.md
+            echo "" >> README.md
+            echo "Helm chart repository for MCP Kroki." >> README.md
+            echo "" >> README.md
+            echo "Add this repository:" >> README.md
+            echo '```bash' >> README.md
+            echo "helm repo add mcp-kroki https://aescanero.github.io/mcp-kroki" >> README.md
+            echo "helm repo update" >> README.md
+            echo '```' >> README.md
 
-Visit the repository at: https://aescanero.github.io/mcp-kroki
-
-## Usage
-
-```bash
-helm repo add mcp-kroki https://aescanero.github.io/mcp-kroki
-helm repo update
-helm install my-mcp-kroki mcp-kroki/mcp-kroki
-```
-
-For more information, visit the [main repository](https://github.com/aescanero/mcp-kroki).
-EOFREADME
-
-            cat > index.html << 'EOFHTML'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCP Kroki Helm Chart Repository</title>
-</head>
-<body>
-    <h1>MCP Kroki Helm Charts</h1>
-    <p>Visit <a href="https://github.com/aescanero/mcp-kroki">GitHub repository</a> for more information.</p>
-</body>
-</html>
-EOFHTML
+            # Create initial index.html
+            echo "<!DOCTYPE html>" > index.html
+            echo "<html><head><title>MCP Kroki Helm Charts</title></head>" >> index.html
+            echo "<body><h1>MCP Kroki Helm Charts</h1>" >> index.html
+            echo "<p>Visit <a href='https://github.com/aescanero/mcp-kroki'>GitHub</a></p>" >> index.html
+            echo "</body></html>" >> index.html
 
             git add .
             git config user.name "$GITHUB_ACTOR"
